@@ -1,0 +1,89 @@
+.DS_Store
+.env
+.env.*
+!.env.example
+
+.venv/
+.venv-*/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+reports/*
+!reports/.gitkeep
+
+*.backup
+*.bak
+*.bak-*
+*.pre-network-patch
+*.before-network-fix
+
+.streamlit/secrets.toml
+
+# Environment dan rahasia
+.env
+.env.*
+!.env.example
+backend/.env
+.streamlit/secrets.toml
+
+# Virtual environment
+.venv/
+.venv-*/
+venv/
+
+# File backup dan hasil eksperimen
+*.backup*
+*.bak*
+*.before-*
+*.save
+*_rusak_*
+
+# Data lokal dan laporan investigasi
+reports/*
+!reports/.gitkeep
+dokumentasi/bukti-pengujian/
+
+# Database dan log lokal
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Cache
+.DS_Store
+__pycache__/
+.pytest_cache/
+
+# Rahasia dan konfigurasi lokal
+backend/.env
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Virtual environment
+.venv/
+.venv-*/
+venv/
+
+# Backup dan file sementara
+*.backup*
+*.bak*
+*.before-*
+*.save
+*_rusak_*
+
+# Laporan dan data investigasi lokal
+reports/*
+!reports/.gitkeep
+dokumentasi/bukti-pengujian/
+
+# Database, log, dan cache
+*.db
+*.sqlite
+*.sqlite3
+*.log
+.DS_Store
+__pycache__/
+.pytest_cache/

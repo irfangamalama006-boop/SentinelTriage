@@ -1,0 +1,2 @@
+Dokumen uji SentinelTriage.
+File ini digunakan untuk menguji inventaris dan SHA-256.

@@ -1,0 +1,2 @@
+SIMULATED_TRIAGE_MARKER_12345
+Ini adalah teks sintetis untuk pengujian YARA.
