@@ -12,3 +12,4 @@ python-jose==3.5.0
 passlib==1.7.4
 argon2-cffi==25.1.0
 pydantic==2.13.5
+certifi==2026.10.19
