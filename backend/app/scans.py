@@ -374,7 +374,7 @@ def execute_scan(
             "scan_errors": result.get("errors", []),
         }
 
-    except Exception as exc:
+    except Exception:
         with engine.begin() as connection:
             connection.execute(
                 text("""
@@ -388,7 +388,7 @@ def execute_scan(
 
         raise HTTPException(
             status_code=500,
-            detail=f"Eksekusi scan gagal: {str(exc)}",
+            detail="Eksekusi scan gagal. Periksa log server.",
         )
 
 

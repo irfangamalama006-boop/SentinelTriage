@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 from jose import jwt, JWTError
 from sqlalchemy import text, bindparam
 
-from .database import engine, DB_NAME
+from .database import engine
 from .auth import (
     router as auth_router,
     SECRET_KEY,
@@ -142,45 +142,12 @@ def health():
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
 
-        return {
-            "status": "healthy",
-            "database": DB_NAME,
-            "connection": "connected",
-        }
+        return {"status": "healthy"}
 
     except Exception:
         raise HTTPException(
             status_code=503,
-            detail="Database connection failed",
-        )
-
-
-@app.get("/database/tables")
-def get_tables():
-    try:
-        with engine.connect() as connection:
-            result = connection.execute(
-                text("""
-                    SELECT TABLE_NAME
-                    FROM information_schema.tables
-                    WHERE TABLE_SCHEMA = :db_name
-                    AND TABLE_TYPE = 'BASE TABLE'
-                    ORDER BY TABLE_NAME
-                """),
-                {"db_name": DB_NAME},
-            )
-            tables = [row[0] for row in result]
-
-        return {
-            "database": DB_NAME,
-            "total_tables": len(tables),
-            "tables": tables,
-        }
-
-    except Exception:
-        raise HTTPException(
-            status_code=500,
-            detail="Failed to read database tables",
+            detail="Service temporarily unavailable",
         )
 
 
@@ -368,11 +335,17 @@ def get_case(
     with engine.connect() as connection:
         case = connection.execute(
             text("""
-                SELECT *
-                FROM cases
-                WHERE id = :case_id
+                SELECT c.*
+                FROM cases c
+                JOIN organization_members om
+                    ON om.organization_id = c.organization_id
+                WHERE c.id = :case_id
+                  AND om.user_id = :user_id
             """),
-            {"case_id": case_id},
+            {
+                "case_id": case_id,
+                "user_id": current_user["id"],
+            },
         ).mappings().first()
 
     if not case:
@@ -380,11 +353,6 @@ def get_case(
             status_code=404,
             detail="Kasus tidak ditemukan",
         )
-
-    check_membership(
-        current_user["id"],
-        case["organization_id"],
-    )
 
     return {"case": dict(case)}
 
@@ -410,11 +378,17 @@ def update_case(
     with engine.begin() as connection:
         case = connection.execute(
             text("""
-                SELECT id, organization_id, case_number
-                FROM cases
-                WHERE id = :case_id
+                SELECT c.id, c.organization_id, c.case_number
+                FROM cases c
+                JOIN organization_members om
+                    ON om.organization_id = c.organization_id
+                WHERE c.id = :case_id
+                  AND om.user_id = :user_id
             """),
-            {"case_id": case_id},
+            {
+                "case_id": case_id,
+                "user_id": current_user["id"],
+            },
         ).mappings().first()
 
         if not case:
@@ -422,11 +396,6 @@ def update_case(
                 status_code=404,
                 detail="Kasus tidak ditemukan",
             )
-
-        check_membership(
-            current_user["id"],
-            case["organization_id"],
-        )
 
         connection.execute(
             text("""
@@ -472,5 +441,3 @@ def update_case(
         "case_id": case_id,
         "status": data.status,
     }
-
-
